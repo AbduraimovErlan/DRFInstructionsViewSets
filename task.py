@@ -269,4 +269,133 @@ class AntMan(Hero):
             self.health = self.health + int(boss.damage * 0.5)
             print(f'Quantumania!')
 
-"""   прод """
+class Tricky(Hero):
+    def __init__(self, name, health, damage):
+        super(Tricky, self).__init__(name, health, damage, SuperAbility.OPOSSUM)
+
+    def apply_super_power(self, boss, heroes):
+        death_chance = randint(1, 5)
+        if death_chance == 2:
+            self.health = self.health + boss.damage
+            boss.health = boss.health + self.damage
+            print(f'IM DEAD!(not)')
+
+
+
+class Hacker(Hero):
+    def __init__(self, name, health, damage, vampire_damage):
+        super().__init__(name, health, damage, SuperAbility.VAMPIRISM)
+        self.__vampire_damage = vampire_damage
+
+
+    def apply_super_power(self, boss, heroes):
+        boss.health = boss.health - self.__vampire_damage
+        hero = choice(heroes)
+        if hero.health > 0 and hero != self:
+            hero.health = hero.health + self.__vampire_damage
+            print(f'BLOOD MOON ROSE!!!!!')
+
+        else:
+            self.health = self.health + self.__vampire_damage
+            print('FIRST BLOOD!')
+
+
+
+class Medic(Hero):
+    def __init__(self, name, health, damage, heal_points):
+        super().__init__(name, health, damage, SuperAbility.HEAL)
+        self.__heal_points = heal_points
+
+    @property
+    def heal_points(self):
+        return self.__heal_points
+
+    @heal_points.setter
+    def heal_points(self, value):
+        self.__heal_points = value
+
+
+    def apply_super_power(self, boss, heroes):
+        for hero in heroes:
+            if hero.health > 0 and self != hero:
+                hero.health = hero.health + self.__heal_points
+
+
+
+
+class Druid(Hero):
+    def __init__(self, name, health, damage, heal_points=0):
+        super().__init__(name, health, damage, SuperAbility.ANGEL_CROW)
+        self.__heal_points = heal_points
+        if heal_points > 0:
+            raise ValueError('Heal points must be 0 for this hero!')
+
+    def apply_super_power(self, boss, heroes):
+        summon_counter = 1
+        while summon_counter > 0:
+            summon_counter -= 1
+            for hero in heroes:
+                if hero.super_ability == SuperAbility.HEAL and hero != self:
+                    hero.heal_points = int(hero.heal_points * 1.2)
+                    print('Doctors skills were increased!')
+#...
+
+
+round_counter = 0
+def print_statistics(boss, heroes):
+    print('ROUND' + str(round_counter)   +   ' ___________')
+    print(boss)
+    for hero in heroes:
+        print(hero)
+
+
+def is_game_finished(boss, heroes):
+    if boss.health <= 0:
+        print('Heroes won!!!')
+        return True
+    all_heroes_dead = True
+    for hero in heroes:
+        if hero.health > 0:
+            all_heroes_dead = False
+            break
+
+    if all_heroes_dead:
+        print('Boss won!!!')
+    return all_heroes_dead
+
+
+def play_round(boss, heroes):
+    global round_counter
+    round_counter += 1
+    boss.choose_defence(heroes)
+    boss.hit(heroes)
+    for hero in heroes:
+        if boss.defence != hero.super_ability and hero.health > 0 and boss.health > 0:
+            hero.hit(boss)
+            hero.apply_super_power(boss, heroes)
+    print_statistics(boss, heroes)
+
+
+
+def start_game():
+    boss = Boss('Rashan', 1000, 50)
+    warrior = Warrior('Conan', 250, 0)
+    mage = Druid('Merlin', 280, 10)
+    berserk = Berserk('Hiccup', 260, 0)
+    kamikadze = Kamikadze('Rob', 300)
+    deku = Deku('Midoria', 250, 20)
+    hacker = Hacker('Kuba', 270, 20, 12)
+    thor = Thor('Thor', 290, 17)
+    tricky = Tricky('Jack', 300, 10)
+    antman = AntMan('Scott', 250, 15)
+    samurai = Medic('Scott', 150, 15)
+    lucky = Lucky('Lucky', 260, 13)
+    golem = Golem('Grut', 500, 5)
+    witcher = Withcer('Geralt', 250)
+    heroes = [warrior, mage, berserk, samurai, deku]
+
+    print_statistics(boss, heroes)
+    while not is_game_finished(boss, heroes):
+        play_round(boss, heroes)
+
+start_game()
