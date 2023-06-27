@@ -159,6 +159,114 @@ class Golem(Hero):
                 hero.health = hero.health + int(boss.damage * 0.2)
         print(f'GUARDED!')
 
-"""#### продолжить """
 
 
+class Withcer(Hero):
+    def __init__(self, name, health, damage):
+        super().__init__(name, health, damage, SuperAbility.REVIVE)
+        if damage > 0:
+            raise ValueError('Damage must be 0 for this hero!')
+
+    def apply_super_power(self, boss, heroes):
+        for hero in heroes:
+            if hero.health == 0 and hero != self and self.health > 0:
+                hero.health = self.health
+                self.health = 0
+                print(f'Hero was revived!')
+
+
+
+
+class Lucky(Hero):
+    def __init__(self, name, health, damage):
+        super().__init__(name, health, damage, SuperAbility.LUCK)
+
+    def apply_super_power(self, boss, heroes):
+        luck_chance = randint(1, 31)
+        if luck_chance == 7 and self.health > 0:
+            self.health = self.health + boss.damage
+            print(f'Luck! Luck! Luck!')
+
+
+class Samurai(Hero):
+    def __init__(self, name, health, damage, damage_points):
+        super().__init__(name, health, damage, SuperAbility.POISON_HEAL_SHURIKENS)
+        self.__damage_points = damage_points
+
+    def apply_super_power(self, boss, heroes):
+        dropout_chance = randint(1, 101)
+        if dropout_chance % 2 == 0:
+            boss.health = boss.health - self.__damage_points
+            print('Boss was poisoned!')
+        elif dropout_chance % == 1:
+            boss.health = boss.health + self.__damage_points
+            print(f'Boss was cured!')
+
+
+class Kamikadze(Hero):
+    def __init__(self, name, health, damage=0):
+        super(Kamikadze, self).__init__(name, health, damage, SuperAbility.SELF_DESTRUCTION)
+        if damage > 0:
+            raise ValueError('Damage must be 0 for this hero!')
+
+    def apply_super_power(self, boss, heroes):
+        if self.health <= boss.damage * 4:
+            accuracy = randint(1, 21)
+            if accuracy == 10:
+                self.health = 0
+                boss.health = boss.health - self.health
+                print(f'EXACTLY ON TARGET! Astalavista Bady!')
+            else:
+                self.health = 0
+                boss.health = boss.health - int(self.health * 0.5)
+                print("MISSED! I've done everything I can.")
+
+
+
+class Deku(Hero):
+    def __init__(self, name, health, damage):
+        super(Deku, self).__init__(name, health, damage, SuperAbility.ONE_FOR_ALL)
+
+    def apply_super_power(self, boss, heroes):
+        damage_chance = randint(1, 3)
+        if damage_chance == 2:
+            ability_chance = randint(5, 8)
+            if ability_chance % 4 == 1:
+                boss.health = boss.health - int(self.damage * 1.2)
+                boss.health = boss.health + self.damage
+                self.health = int(self.health * 0.8)
+                print(f'ONE FOR ALL 20%!')
+
+            elif ability_chance % 4 == 2:
+                boss.health = boss.health - int(self.damage * 1.5)
+                boss.health = boss.health + self.damage
+                self.health = int(self.health * 0.5)
+                print('ONE FOR ALL 50%!')
+
+            else:
+                boss.health = boss.health - self.damage * 2
+                boss.health = boss.health + self.damage
+                self.health = 0
+                print('ONE FOR ALL 100!!!!!')
+        else:
+            print('ONE FOR ALL nor used!')
+
+
+
+class AntMan(Hero):
+    def __init__(self, name, health, damage):
+        super(AntMan, self).__init__(name, health, damage, SuperAbility.SIZE_INCREASE_AND_REDUCTION)
+
+    def apply_super_power(self, boss, heroes):
+        size_chance = randint(1, 3)
+        if size_chance == 1:
+            boss.health = boss.health - int(self.damage * 0.5)
+            self.health = self.health - int(boss.damage * 0.5)
+            print('Towards the SUN!')
+        else:
+            boss.health = boss.health - self.damage // 2
+            boss.health = boss.health + self.damage
+            self.health = self.health + int(boss.damage * 0.5)
+            print(f'Quantumania!')
+
+"""   прод """
